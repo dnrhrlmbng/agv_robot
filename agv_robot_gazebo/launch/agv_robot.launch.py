@@ -21,7 +21,7 @@ def generate_launch_description():
     )
 
     world_arg = DeclareLaunchArgument(
-        'world', default_value='maze.world',
+        'world', default_value='myworld.world',
         description='Name of the Gazebo world file to load'
     )
 
@@ -78,7 +78,7 @@ def generate_launch_description():
         arguments=[
             "-name", "my_robot",
             "-topic", "robot_description",
-            "-x", "-0.3", "-y", "-2.0", "-z", "0.5", "-Y", "1.59"
+            "-x", "0", "-y", "-2.0", "-z", "0.5", "-Y", "1.59"
         ],
         output="screen",
         parameters=[
@@ -122,13 +122,13 @@ def generate_launch_description():
 
     launchDescriptionObject = LaunchDescription()
 
-    launchDescriptionObject.add_action(rviz_launch_arg)
+    # launchDescriptionObject.add_action(rviz_launch_arg)
     launchDescriptionObject.add_action(world_arg)
     launchDescriptionObject.add_action(model_arg)
     launchDescriptionObject.add_action(pointcloud_concatenate_arg) 
     launchDescriptionObject.add_action(world_launch)
     launchDescriptionObject.add_action(pointcloud_concatenate_launch) 
-    launchDescriptionObject.add_action(rviz_node)
+    # launchDescriptionObject.add_action(rviz_node)
     launchDescriptionObject.add_action(spawn_urdf_node)
     launchDescriptionObject.add_action(robot_state_publisher_node)
     launchDescriptionObject.add_action(gz_bridge_node)
