@@ -46,9 +46,9 @@
     <!-- <include>
       <uri>https://fuel.gazebosim.org/1.0/OpenRobotics/models/Ground Plane</uri>
     </include> -->
-    <include>
+    <!-- <include>
       <uri>https://fuel.gazebosim.org/1.0/OpenRobotics/models/Sun</uri>
-    </include>
+    </include> -->
     <include>
       <uri>https://fuel.gazebosim.org/1.0/OpenRobotics/models/Tunnel Intersection</uri>
       <pose>0 -9 0.1 0 0 0</pose>
