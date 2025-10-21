@@ -1,0 +1,187 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="agv_robot">
+
+<xacro:property name="mesh_pkg" value="agv_robot_description"/>
+<xacro:property name="mesh_name" value="meshes/agv.stl"/>
+
+<link name="base_link">
+    <visual>
+        <material name="Grey">
+            <color rgba="${229/255} ${229/255} ${229/255} 1.0"/>
+        </material>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+        <mesh filename="package://${mesh_pkg}/${mesh_name}" scale="0.1 0.1 0.1"/>
+        </geometry>
+    </visual>
+    <collision>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+            <mesh filename="package://${mesh_pkg}/${mesh_name}" scale="0.1 0.1 0.1"/>
+        </geometry>
+    </collision>
+    <inertial>
+        <mass value="50.0"/>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <inertia ixx="0.5" ixy="0.0" ixz="0.0" iyy="0.5" iyz="0.0" izz="0.5"/>
+    </inertial>
+</link>
+
+<link name="left_wheel">
+  <visual>
+    <origin xyz="0 0 0" rpy="1.561 0 0"/>
+    <geometry>
+      <cylinder length="0.05" radius="0.082"/>
+    </geometry>
+  </visual>
+  <collision>
+    <origin xyz="0 0 0" rpy="1.561 0 0"/>
+    <geometry>
+      <cylinder length="0.05" radius="0.082"/>
+    </geometry>
+  </collision>
+  <inertial>
+    <mass value="0.5"/> 
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+    <inertia
+      ixx="0.001" ixy="0.0" ixz="0.0"
+      iyy="0.001" iyz="0.0" izz="0.001"/>
+  </inertial>
+</link>
+
+<joint name="left_wheel_joint" type="continuous">
+  <parent link="base_link"/>
+  <child link="left_wheel"/>
+  <origin xyz="0 0.155 0.066" rpy="0 0 0"/>
+  <axis xyz="0 1 0"/>
+</joint>
+
+<link name="right_wheel">
+  <visual>
+    <origin xyz="0 0 0" rpy="1.561 0 0"/>
+    <geometry>
+      <cylinder length="0.05" radius="0.082"/>
+    </geometry>
+  </visual>
+  <collision>
+    <origin xyz="0 0 0" rpy="1.561 0 0"/>
+    <geometry>
+      <cylinder length="0.05" radius="0.082"/>
+    </geometry>
+  </collision>
+  <inertial>
+    <mass value="0.5"/> 
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+    <inertia
+      ixx="0.001" ixy="0.0" ixz="0.0"
+      iyy="0.001" iyz="0.0" izz="0.001"/>
+  </inertial>
+</link>
+
+<joint name="right_wheel_joint" type="continuous">
+  <parent link="base_link"/>
+  <child link="right_wheel"/>
+  <origin xyz="0 -0.188 0.066" rpy="0 0 0"/>
+  <axis xyz="0 1 0"/>
+</joint>
+
+<link name="camera_link">
+    <visual>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+            <box size="0.05 0.05 0.05"/>
+        </geometry>
+        <material name="Black">
+            <color rgba="0 0 0 1.0"/>
+        </material>
+    </visual>
+    <collision>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+            <box size="0.05 0.05 0.05"/>
+        </geometry>
+    </collision>
+    <inertial>
+        <mass value="0.1"/>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <inertia ixx="0.0001" ixy="0.0" ixz="0.0" iyy="0.0001" iyz="0.0" izz="0.0001"/>
+    </inertial>
+</link>
+
+<joint name="camera_joint" type="fixed">
+    <parent link="base_link"/>
+    <child link="camera_link"/>
+    <origin xyz="0.2 0 0.15" rpy="0 0 0"/>
+</joint>
+
+<gazebo reference="camera_link">
+    <sensor type="depth" name="depth_camera">
+        <always_on>true</always_on>
+        <update_rate>30.0</update_rate>
+        <camera>
+            <horizontal_fov>1.047</horizontal_fov>
+            <image>
+                <width>640</width>
+                <height>480</height>
+                <format>R_FLOAT32</format>
+            </image>
+            <clip>
+                <near>0.1</near>
+                <far>10.0</far>
+            </clip>
+            <noise>
+                <type>gaussian</type>
+                <mean>0.0</mean>
+                <stddev>0.007</stddev>
+            </noise>
+        </camera>
+        <plugin name="depth_camera_controller" filename="libgz-sim-sensor-components-system.so">
+            <gz>sim</gz>
+        </plugin>
+    </sensor>
+</gazebo>
+
+<gazebo reference="camera_link">
+    <sensor type="camera" name="rgbd_camera">
+        <always_on>true</always_on>
+        <update_rate>30.0</update_rate>
+        <camera>
+            <horizontal_fov>1.047</horizontal_fov>
+            <image>
+                <width>640</width>
+                <height>480</height>
+                <format>R8G8B8</format>
+            </image>
+            <clip>
+                <near>0.1</near>
+                <far>10.0</far>
+            </clip>
+        </camera>
+        <plugin name="rgb_camera_controller" filename="libgz-sim-sensor-components-system.so">
+            <gz>sim</gz>
+        </plugin>
+    </sensor>
+</gazebo>
+
+<gazebo>
+  <plugin filename="libgz-sim-diff-drive-system.so" name="gz::sim::systems::DiffDrive">
+    <left_joint>left_wheel_joint</left_joint>
+    <right_joint>right_wheel_joint</right_joint>
+    <wheel_separation>0.31</wheel_separation>
+    <wheel_radius>0.072</wheel_radius>
+    <odom_publish_frequency>30</odom_publish_frequency>
+    <topic>cmd_vel</topic>
+  </plugin>
+</gazebo>
+
+<gazebo reference="left_wheel">
+  <mu1>1.0</mu1>
+  <mu2>1.0</mu2>
+</gazebo>
+
+<gazebo reference="right_wheel">
+  <mu1>1.0</mu1>
+  <mu2>1.0</mu2>
+</gazebo>
+
+</robot>
